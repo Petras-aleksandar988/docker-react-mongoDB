@@ -1,0 +1,81 @@
+name: mern-app
+
+
+#  mongodb:
+#     image: mongo
+#     ports:
+#      - 27017:27017
+#     environment:
+#      - MONGO_INITDB_ROOT_USERNAME=admin
+#      - MONGO_INITDB_ROOT_PASSWORD=admin1
+#     networks:
+#       - mern-app
+#  mongo-express:
+#     image: mongo-express
+#     restart: always
+#     ports:
+#      - 8081:8081
+#     environment:
+#      - ME_CONFIG_BASICAUTH_USERNAME=admin
+#      - ME_CONFIG_BASICAUTH_PASSWORD=admin1
+#      - ME_CONFIG_MONGODB_SERVER=mongodb
+#     depends_on:
+#      - "mongodb"
+#     networks:
+#       - mern-app
+
+services:
+ backend:
+  image: aleksa988/mern-app:1.0 
+  # build: 
+  #  context: ./backend
+  #  dockerfile: Dockerfile
+  command: npm run dev
+  # develop: 
+  #  watch: 
+  #  - action: sync
+  #    path: ./backend
+  #    target: /app
+  #    ignore:
+  #     - node_modules/
+  restart: unless-stopped
+  env_file: .env
+  volumes: 
+   - ./backend:/app
+   - /app/node_modules
+  networks:
+    - mern-app
+  ports:
+    - 5000:5000
+
+ frontend: 
+  image: aleksa988/mern-app:frontend
+  # build: 
+  #  context: ./frontend
+  #  dockerfile: Dockerfile
+  restart: unless-stopped
+  env_file: .env
+  volumes: 
+   - ./frontend:/app
+   - /app/node_modules
+  networks:
+    - mern-app
+  ports:
+    - 5173:5173
+  command: npm run dev -- --host
+  depends_on: 
+   - "backend"
+
+
+
+
+
+ 
+  
+# volumes:
+#   mongo_data:
+
+networks:
+ mern-app:
+  driver: bridge
+
